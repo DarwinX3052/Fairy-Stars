@@ -1,81 +1,68 @@
-var canvas;
-var block1,block2,block3,block4;
-var ball, edges;
-var music;
+var starImg,bgImg;
+var star, starBody;
+var fImg, fsnd, f;
 
-function preload(){
-    music = loadSound("music.mp3");
+const Engine = Matter.Engine;
+const World = Matter.World;
+const Bodies = Matter.Bodies;
+const Body = Matter.Body;
+
+function preload()
+{
+	starImg = loadImage("images/star.png");
+	bgImg = loadImage("images/starNight.png");
+	fImg = loadAnimation("images/fairyImage1.png", "images/fairyImage2.png");
+	fsnd = loadSound("sound/JoyMusic.mp3");
 }
 
+function setup() {
+	createCanvas(800, 750);
 
-function setup(){
-    canvas = createCanvas(800,600);
 
-    block1 = createSprite(0,580,360,30);
-    block1.shapeColor = "blue";
+	f = createSprite(100, 500, 50, 50);
+	f.addAnimation("fairy", fImg);
+	f.scale = 0.2;
 
-    block2 = createSprite(295,580,200,30);
-    block2.shapeColor = "orange";
 
-    block3 = createSprite(500,580,200,30);
-    block3.shapeColor = "red";
+	star = createSprite(650,30);
+	star.addImage(starImg);
+	star.scale = 0.2;
 
-    block4 = createSprite(795,580,360,30);
-    block4.shapeColor = "green";
 
-    
+	engine = Engine.create();
+	world = engine.world;
 
-    ball = createSprite(random(20,750),100, 40,40);
-    ball.shapeColor = rgb(255,255,255);
-    ball.velocityX = Math.round(random(-4, 4));
-    ball.velocityY = Math.round(random(-4, 4));
+	starBody = Bodies.circle(650 , 30 , 5 , {restitution:0.5, isStatic:true});
+	World.add(world, starBody);
+	
+	Engine.run(engine);
 
 }
+
 
 function draw() {
-    background(rgb(169,169,169));
-    edges=createEdgeSprites();
-    ball.bounceOff(edges);
+  background(bgImg);
+  fsnd.play();
 
-    
-    //write code to bounce off ball from the block1 
-    if(block1.isTouching(ball) && ball.bounceOff(block1)){
-        ball.shapeColor = "blue";
-        music.play();
-    }
+  star.x= starBody.position.x 
+  star.y= starBody.position.y 
 
+  console.log(star.y);
 
+  if (star.y > 470 && starBody.position.y >470 ){
+	Matter.Body.setStatic(starBody,true); 
+  }
 
-    if(block2.isTouching(ball)){
-        ball.shapeColor = "orange";
-        ball.velocityX = 0;
-        ball.velocityY = 0;
+  drawSprites();
 
-        music.stop();
-    }
+  f.x = mouseX;
 
-    if(block3.isTouching(ball)){
-        ball.shapeColor = "red";
-        
+}
 
-        music.stop();
-    }
-    if(block4.isTouching(ball)){
-        ball.shapeColor = "green";
-        ball.velocityY = -6;
-        ball.velocityX = -6;
+function keyPressed() {
 
-        music.stop();
-    }
-
-
-    //write code to bounce off ball from the block4
-
-    edges = createEdgeSprites();
-    ball.bounceOff(edges);
-    ball.bounceOff(block1);
-    ball.bounceOff(block2);
-    ball.bounceOff(block3);
-    ball.bounceOff(block4);
-    drawSprites();
+	if (keyCode === DOWN_ARROW) {
+		Matter.Body.setStatic(starBody,false); 
+	}
+	
 }
